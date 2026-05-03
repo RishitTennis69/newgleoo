@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gleo — Fusion 6: Wise chart × Origin bubbles × Linear rows</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif&display=swap" rel="stylesheet">
+<style>
+	:root {
+		--bg: #faf8f3;
+		--surface: #ffffff;
+		--ink: #0e0f0c;
+		--muted: #6b7280;
+		--line: #ececec;
+		--accent: #1a1a1a;
+		--mint: #c8eed1;
+		--mint-dark: #2d7a3e;
+		--peach: #f1b27c;
+		--orange: #ed7a3a;
+		--blue: #5b9bd5;
+		--purple: #b09cd8;
+		--teal: #2c7a7b;
+		--lilac: #d6cdf4;
+	}
+	* { box-sizing: border-box; }
+	body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, sans-serif; font-size: 13px; line-height: 1.5; }
+	.shell { display: flex; min-height: 100vh; padding-bottom: 80px; }
+	.sidebar { width: 220px; padding: 24px 14px; border-right: 1px solid var(--line); background: var(--bg); }
+	.brand { font-size: 20px; font-weight: 800; padding: 0 8px 28px; letter-spacing: -0.02em; }
+	.sidebar-item { padding: 9px 12px; border-radius: 999px; color: var(--ink); cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+	.sidebar-item:hover { background: rgba(0,0,0,0.04); }
+	.sidebar-item.active { background: var(--mint); }
+	.section-label { padding: 16px 12px 6px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+	.content { flex: 1; padding: 32px 40px 40px; max-width: 1240px; }
+
+	.head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+	h1 { font-family: 'Instrument Serif', serif; font-size: 44px; font-weight: 400; margin: 0; letter-spacing: -0.02em; line-height: 1; }
+	.kicker { color: var(--muted); margin-top: 6px; font-size: 14px; }
+	.head-actions { display: flex; gap: 10px; }
+	.pill-btn { background: var(--mint); color: var(--mint-dark); padding: 8px 16px; border-radius: 999px; font-weight: 600; font-size: 13px; cursor: pointer; border: 0; display: inline-flex; align-items: center; gap: 6px; }
+	.pill-btn.dark { background: var(--ink); color: #fff; }
+	.pill-btn.ghost { background: var(--surface); border: 1px solid var(--line); color: var(--ink); }
+
+	/* Score chart card — Wise pattern */
+	.score-card { background: var(--surface); border-radius: 16px; padding: 24px 28px 16px; margin-top: 24px; border: 1px solid var(--line); }
+	.score-row { display: flex; justify-content: space-between; align-items: flex-end; gap: 28px; margin-bottom: 12px; }
+	.score-num { font-family: 'Instrument Serif', serif; font-size: 80px; line-height: 1; letter-spacing: -0.04em; }
+	.score-meta { display: flex; flex-direction: column; gap: 2px; }
+	.score-band { display: inline-flex; align-items: center; gap: 6px; background: var(--mint); color: var(--mint-dark); padding: 4px 12px; border-radius: 999px; font-weight: 600; font-size: 12px; align-self: flex-start; }
+	.score-summary { font-size: 13px; color: var(--muted); margin-top: 6px; max-width: 240px; }
+	.score-stats { display: flex; gap: 36px; padding-top: 8px; }
+	.s-stat-num { font-size: 22px; font-weight: 700; }
+	.s-stat-label { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+	.chart { display: flex; align-items: flex-end; gap: 12px; height: 160px; padding: 16px 0 8px; border-top: 1px solid var(--line); margin-top: 12px; }
+	.chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
+	.chart-bar { width: 14px; background: rgba(0,0,0,0.06); border-radius: 999px; }
+	.chart-col.now .chart-bar { background: var(--ink); }
+	.chart-label { font-size: 11px; color: var(--muted); }
+	.chart-col.now .chart-label { color: var(--ink); font-weight: 700; }
+
+	/* Categories — Linear row + Origin bubble */
+	.section-head { display: flex; justify-content: space-between; align-items: baseline; margin: 32px 0 14px; }
+	.section-title { font-family: 'Instrument Serif', serif; font-size: 28px; font-weight: 400; letter-spacing: -0.01em; }
+	.tab-pills { display: flex; gap: 4px; background: var(--surface); padding: 4px; border-radius: 999px; border: 1px solid var(--line); }
+	.tab-pill { padding: 6px 14px; border-radius: 999px; cursor: pointer; color: var(--muted); font-size: 12px; font-weight: 500; }
+	.tab-pill.active { background: var(--ink); color: #fff; }
+
+	.cats { background: var(--surface); border-radius: 16px; border: 1px solid var(--line); overflow: hidden; }
+	.cat { display: grid; grid-template-columns: 44px 1fr 220px 110px 24px; gap: 18px; align-items: center; padding: 16px 22px; border-bottom: 1px solid var(--line); cursor: pointer; transition: background 120ms ease; }
+	.cat:last-child { border-bottom: 0; }
+	.cat:hover { background: #fafafa; }
+	.cat.open { background: #fafafa; }
+	.bubble { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+	.cat-name { font-weight: 600; font-size: 14px; }
+	.cat-sub { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: var(--muted); margin-top: 4px; letter-spacing: 0.02em; }
+	.bar-cell { display: flex; align-items: center; gap: 10px; }
+	.bar-track { flex: 1; height: 6px; background: rgba(0,0,0,0.06); border-radius: 999px; overflow: hidden; }
+	.bar-fill { height: 100%; border-radius: 999px; }
+	.cat-pct { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; min-width: 42px; text-align: right; }
+	.cat-issues-cell { text-align: right; }
+	.issues-num { font-size: 20px; font-weight: 700; font-family: 'Instrument Serif', serif; line-height: 1; }
+	.issues-num.bad { color: #ef4444; }
+	.issues-num.warn { color: #f59e0b; }
+	.issues-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 4px; }
+	.chev { color: var(--muted); font-size: 18px; text-align: right; }
+
+	.cat-detail { background: #fafafa; padding: 4px 22px 20px 84px; border-bottom: 1px solid var(--line); }
+	.cat-blurb { font-style: italic; color: var(--muted); padding: 14px 0 6px; font-size: 13px; }
+	.check { display: grid; grid-template-columns: 12px 1fr auto; gap: 14px; padding: 14px 0; border-top: 1px solid var(--line); align-items: start; }
+	.check-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; }
+	.check.pass .check-dot { background: var(--mint-dark); }
+	.check.fail .check-dot { background: #f59e0b; }
+	.check.miss .check-dot { background: #ef4444; }
+	.check-name { font-weight: 600; font-size: 13px; }
+	.check-sub { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.55; }
+	.fix-btn { background: transparent; border: 1px solid var(--ink); padding: 4px 12px; border-radius: 999px; font-size: 11px; font-weight: 600; cursor: pointer; }
+	.fix-btn:hover { background: var(--ink); color: #fff; }
+	.pill { display: inline-flex; align-items: center; padding: 3px 9px; font-size: 11px; border-radius: 999px; font-weight: 600; }
+	.pill-mint { background: var(--mint); color: var(--mint-dark); }
+	.pill-amber { background: #fde9b8; color: #7c4a03; }
+	.pill-red { background: #fde2e2; color: #7c1d1d; }
+
+	.actionbar {
+		position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+		display: flex; gap: 10px; align-items: center;
+		background: var(--ink); color: #fff;
+		border-radius: 999px; padding: 8px 8px 8px 18px;
+		box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+	}
+	.actionbar .meta { font-size: 12px; color: rgba(255,255,255,0.7); }
+	.actionbar .pill-btn { background: rgba(255,255,255,0.12); color: #fff; }
+	.actionbar .pill-btn.primary { background: var(--mint); color: var(--mint-dark); }
+	.kbd { display: inline-block; padding: 1px 6px; font-size: 10px; border-radius: 4px; background: rgba(255,255,255,0.16); color: rgba(255,255,255,0.8); margin-left: 4px; font-family: ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<div class="shell">
+	<nav class="sidebar">
+		<div class="brand">gleo.</div>
+		<div class="section-label">Track</div>
+		<div class="sidebar-item">🏠 Home</div>
+		<div class="sidebar-item active">📊 GEO Report</div>
+		<div class="sidebar-item">📄 Pages</div>
+		<div class="section-label">Insights</div>
+		<div class="sidebar-item">🤖 AI Crawlers</div>
+		<div class="sidebar-item">🔍 Mention Probe</div>
+		<div class="section-label">Manage</div>
+		<div class="sidebar-item">↺ Changelog</div>
+		<div class="sidebar-item">⚙️ Settings</div>
+	</nav>
+
+	<main class="content">
+		<div class="head">
+			<div>
+				<h1>Get cited by AI.</h1>
+				<div class="kicker">Generative Engine Optimization · Last scan 2h ago</div>
+			</div>
+			<div class="head-actions">
+				<button class="pill-btn ghost">↻ Re-scan</button>
+				<button class="pill-btn dark">⚡ Optimize</button>
+			</div>
+		</div>
+
+		<div class="score-card">
+			<div class="score-row">
+				<div style="display: flex; align-items: flex-end; gap: 20px;">
+					<div class="score-num">74</div>
+					<div class="score-meta">
+						<div class="score-band">● Good · ↑6 vs last week</div>
+						<div class="score-summary">Solid foundation. 9 of 12 issues are auto-fixable.</div>
+					</div>
+				</div>
+				<div class="score-stats">
+					<div><div class="s-stat-num">68</div><div class="s-stat-label">12-month avg</div></div>
+					<div><div class="s-stat-num" style="color:var(--mint-dark)">+19</div><div class="s-stat-label">Since first scan</div></div>
+					<div><div class="s-stat-num">12</div><div class="s-stat-label">Open issues</div></div>
+				</div>
+			</div>
+			<div class="chart">
+				<div class="chart-col"><div class="chart-bar" style="height: 36px"></div><div class="chart-label">May</div></div>
+				<div class="chart-col"><div class="chart-bar" style="height: 44px"></div><div class="chart-label">Jun</div></div>
+				<div class="chart-col"><div class="chart-bar" style="height: 56px"></div><div class="chart-label">Jul</div></div>
+				<div class="chart-col"><div class="chart-bar" style="height: 60px"></div><div class="chart-label">Aug</div></div>
+				<div class="chart-col"><div class="chart-bar" style="height: 78px"></div><div class="chart-label">Sep</div></div>
+				<div class="chart-col"><div class="chart-bar" style="height: 86px"></div><div class="chart-label">Oct</div></div>
+				<div class="chart-col"><div class="chart-bar" style="height: 92px"></div><div class="chart-label">Nov</div></div>
+				<div class="chart-col"><div class="chart-bar" style="height: 88px"></div><div class="chart-label">Dec</div></div>
+				<div class="chart-col"><div class="chart-bar" style="height: 110px"></div><div class="chart-label">Jan</div></div>
+				<div class="chart-col"><div class="chart-bar" style="height: 116px"></div><div class="chart-label">Feb</div></div>
+				<div class="chart-col"><div class="chart-bar" style="height: 124px"></div><div class="chart-label">Mar</div></div>
+				<div class="chart-col"><div class="chart-bar" style="height: 130px"></div><div class="chart-label">Apr</div></div>
+				<div class="chart-col now"><div class="chart-bar" style="height: 148px"></div><div class="chart-label">May</div></div>
+			</div>
+		</div>
+
+		<div class="section-head">
+			<div class="section-title">Category breakdown</div>
+			<div class="tab-pills">
+				<div class="tab-pill active">By impact</div>
+				<div class="tab-pill">By score</div>
+				<div class="tab-pill">By weight</div>
+			</div>
+		</div>
+
+		<div class="cats">
+			<div class="cat">
+				<div class="bubble" style="background: var(--teal);">⚙️</div>
+				<div>
+					<div class="cat-name">Technical</div>
+					<div class="cat-sub">2 of 5 checks · weight 28%</div>
+				</div>
+				<div class="bar-cell">
+					<div class="bar-track"><div class="bar-fill" style="width:40%; background:#ef4444"></div></div>
+					<div class="cat-pct">40%</div>
+				</div>
+				<div class="cat-issues-cell"><div class="issues-num bad">3</div><div class="issues-label">issues</div></div>
+				<div class="chev">›</div>
+			</div>
+
+			<div class="cat open">
+				<div class="bubble" style="background: var(--blue);">🧪</div>
+				<div>
+					<div class="cat-name">Substance</div>
+					<div class="cat-sub">3 of 6 checks · weight 18%</div>
+				</div>
+				<div class="bar-cell">
+					<div class="bar-track"><div class="bar-fill" style="width:50%; background:#f59e0b"></div></div>
+					<div class="cat-pct">50%</div>
+				</div>
+				<div class="cat-issues-cell"><div class="issues-num warn">3</div><div class="issues-label">issues</div></div>
+				<div class="chev">⌄</div>
+			</div>
+			<div class="cat-detail">
+				<div class="cat-blurb">Whether your pages contain concrete, citable facts. Models cite pages with numbers, dates, and named sources.</div>
+				<div class="check pass">
+					<span class="check-dot"></span>
+					<div>
+						<div class="check-name">Conversational tone <span class="pill pill-mint" style="margin-left: 6px">passing</span></div>
+						<div class="check-sub">Reads naturally for chat-style queries.</div>
+					</div>
+					<div></div>
+				</div>
+				<div class="check fail">
+					<span class="check-dot"></span>
+					<div>
+						<div class="check-name">TL;DR summary blocks <span class="pill pill-amber" style="margin-left: 6px">auto-fix</span></div>
+						<div class="check-sub">3 of 4 priority pages missing a 1-paragraph summary at the top. Chatbots quote summaries 3× more often than body paragraphs.</div>
+					</div>
+					<button class="fix-btn">Fix this →</button>
+				</div>
+				<div class="check miss">
+					<span class="check-dot"></span>
+					<div>
+						<div class="check-name">Fact density <span class="pill pill-amber" style="margin-left: 6px">auto-fix</span></div>
+						<div class="check-sub">About Us has 0 verifiable facts. Pricing has 1. Gleo will pull facts via Tavily and inject them with source links.</div>
+					</div>
+					<button class="fix-btn">Fix this →</button>
+				</div>
+				<div class="check pass">
+					<span class="check-dot"></span>
+					<div>
+						<div class="check-name">Direct answers <span class="pill pill-mint" style="margin-left: 6px">passing</span></div>
+						<div class="check-sub">Headlines paired with concise lead sentences — strong retrieval signal.</div>
+					</div>
+					<div></div>
+				</div>
+			</div>
+
+			<div class="cat">
+				<div class="bubble" style="background: var(--peach);">🛡</div>
+				<div>
+					<div class="cat-name">Trust</div>
+					<div class="cat-sub">3 of 5 checks · weight 14%</div>
+				</div>
+				<div class="bar-cell">
+					<div class="bar-track"><div class="bar-fill" style="width:60%; background:#f59e0b"></div></div>
+					<div class="cat-pct">60%</div>
+				</div>
+				<div class="cat-issues-cell"><div class="issues-num warn">2</div><div class="issues-label">issues</div></div>
+				<div class="chev">›</div>
+			</div>
+
+			<div class="cat">
+				<div class="bubble" style="background: var(--orange);">📝</div>
+				<div>
+					<div class="cat-name">Content</div>
+					<div class="cat-sub">7 of 10 checks · weight 18%</div>
+				</div>
+				<div class="bar-cell">
+					<div class="bar-track"><div class="bar-fill" style="width:72%; background:var(--orange)"></div></div>
+					<div class="cat-pct">72%</div>
+				</div>
+				<div class="cat-issues-cell"><div class="issues-num">2</div><div class="issues-label">issues</div></div>
+				<div class="chev">›</div>
+			</div>
+
+			<div class="cat">
+				<div class="bubble" style="background: var(--purple);">🏗</div>
+				<div>
+					<div class="cat-name">Structure</div>
+					<div class="cat-sub">9 of 11 checks · weight 22%</div>
+				</div>
+				<div class="bar-cell">
+					<div class="bar-track"><div class="bar-fill" style="width:85%; background:var(--mint-dark)"></div></div>
+					<div class="cat-pct">85%</div>
+				</div>
+				<div class="cat-issues-cell"><div class="issues-num">1</div><div class="issues-label">issue</div></div>
+				<div class="chev">›</div>
+			</div>
+
+			<div class="cat">
+				<div class="bubble" style="background: var(--mint-dark);">🤖</div>
+				<div>
+					<div class="cat-name">AI accessibility</div>
+					<div class="cat-sub">4 of 4 checks · llms.txt published</div>
+				</div>
+				<div class="bar-cell">
+					<div class="bar-track"><div class="bar-fill" style="width:90%; background:var(--mint-dark)"></div></div>
+					<div class="cat-pct">90%</div>
+				</div>
+				<div class="cat-issues-cell"><div class="issues-num" style="color:var(--mint-dark)">0</div><div class="issues-label">issues</div></div>
+				<div class="chev">›</div>
+			</div>
+		</div>
+	</main>
+</div>
+
+<div class="actionbar">
+	<span class="meta">9 auto-fixes ready</span>
+	<button class="pill-btn">Re-scan <span class="kbd">R</span></button>
+	<button class="pill-btn primary">⚡ Optimize <span class="kbd" style="background:rgba(0,0,0,0.1); color:rgba(0,0,0,0.6)">F</span></button>
+</div>
+</body>
+</html>

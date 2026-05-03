@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gleo — Mockup 4: Origin-style</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+	:root {
+		--bg: #f6f5f1;
+		--surface: #ffffff;
+		--ink: #0b1020;
+		--muted: #6b7280;
+		--line: #ececec;
+		--accent: #5b8a4a;
+		--orange: #ed7a3a;
+		--blue: #5b9bd5;
+		--purple: #b09cd8;
+		--green: #6aa84f;
+		--teal: #2c7a7b;
+		--peach: #f1b27c;
+	}
+	* { box-sizing: border-box; }
+	body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, sans-serif; font-size: 13px; line-height: 1.5; }
+	.shell { display: flex; min-height: 100vh; }
+	.sidebar { width: 200px; background: var(--bg); padding: 20px 12px; }
+	.brand { font-size: 18px; font-weight: 700; padding: 4px 10px 24px; letter-spacing: -0.02em; }
+	.section-label { padding: 12px 10px 6px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+	.sidebar-item { padding: 8px 10px; border-radius: 8px; color: var(--ink); cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+	.sidebar-item:hover { background: rgba(0,0,0,0.04); }
+	.sidebar-item.active { background: var(--surface); box-shadow: 0 0 0 1px var(--line); }
+	.sidebar-item .ico { width: 14px; opacity: 0.7; }
+	.layout { flex: 1; display: grid; grid-template-columns: 1fr 320px; gap: 0; }
+	.content { padding: 28px 36px; }
+	.rail { padding: 28px 28px 28px 0; }
+	.rail-card { background: var(--surface); border-radius: 12px; padding: 18px; margin-bottom: 14px; }
+	.rail-title { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+	.rail-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px; }
+	.rail-row + .rail-row { border-top: 1px solid var(--line); padding-top: 12px; margin-top: 6px; }
+
+	.tabs { display: flex; gap: 0; border-bottom: 1px solid var(--line); margin-bottom: 28px; }
+	.tab { padding: 12px 28px; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; font-weight: 500; font-size: 14px; }
+	.tab.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 600; }
+
+	.gauge-wrap { display: flex; flex-direction: column; align-items: center; padding: 32px 0 16px; }
+	.gauge { position: relative; width: 240px; height: 130px; }
+	.gauge svg { width: 100%; height: 100%; }
+	.gauge-pct { position: absolute; top: 36%; left: 0; right: 0; text-align: center; font-size: 13px; color: var(--muted); }
+	.gauge-num { position: absolute; top: 52%; left: 0; right: 0; text-align: center; font-size: 48px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
+	.gauge-sub { position: absolute; top: 100%; left: 0; right: 0; text-align: center; font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+	.toolbar { display: flex; justify-content: space-between; align-items: center; margin: 24px 0 16px; }
+	.toolbar-left .label { font-size: 12px; color: var(--muted); margin-right: 8px; }
+	.btn { background: var(--surface); border: 1px solid var(--line); padding: 7px 14px; border-radius: 8px; cursor: pointer; font: 500 13px 'Inter', sans-serif; color: var(--ink); display: inline-flex; align-items: center; gap: 6px; }
+	.btn:hover { background: #fafafa; }
+	.btn-primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+	.btn-pill { border-radius: 999px; padding: 7px 16px; }
+	.actions { display: flex; gap: 8px; }
+
+	.row { background: var(--surface); border-radius: 14px; margin-bottom: 12px; padding: 18px 20px; display: grid; grid-template-columns: 44px 1.2fr 2fr 90px 90px 24px; gap: 18px; align-items: center; cursor: pointer; transition: box-shadow 0.15s; }
+	.row:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+	.row.open { box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+	.bubble { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; }
+	.cat-name { font-weight: 600; font-size: 14px; }
+	.cat-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+	.bar-cell { display: flex; align-items: center; gap: 12px; }
+	.bar-track { flex: 1; height: 8px; background: #eef0f3; border-radius: 999px; overflow: hidden; }
+	.bar-fill { height: 100%; border-radius: 999px; }
+	.bar-pct { font-size: 13px; font-weight: 600; min-width: 40px; text-align: right; font-variant-numeric: tabular-nums; }
+	.cell-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+	.cell-val { font-size: 14px; font-weight: 600; }
+	.chev { color: var(--muted); font-size: 18px; text-align: right; }
+
+	.detail { background: var(--surface); border-radius: 14px; padding: 4px 24px 20px 88px; margin-top: -10px; margin-bottom: 12px; }
+	.check { display: grid; grid-template-columns: 12px 1fr 90px; gap: 14px; align-items: start; padding: 14px 0; border-top: 1px solid var(--line); }
+	.check-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; }
+	.check.pass .check-dot { background: var(--green); }
+	.check.fail .check-dot { background: #f59e0b; }
+	.check.miss .check-dot { background: #ef4444; }
+	.check-name { font-weight: 600; font-size: 13px; }
+	.check-sub { font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.5; }
+	.check-fix { font-size: 11px; color: var(--accent); margin-top: 4px; font-weight: 500; }
+	.pill { display: inline-flex; align-items: center; padding: 4px 10px; font-size: 11px; border-radius: 999px; font-weight: 500; }
+	.pill-green { background: #e8f3df; color: #2d5016; }
+	.pill-amber { background: #fdf0d5; color: #7c4a03; }
+	.pill-red { background: #fde2e2; color: #7c1d1d; }
+
+	.summary { display: flex; gap: 28px; padding: 8px 0 0; }
+	.summary-item { font-size: 13px; }
+	.summary-num { font-size: 20px; font-weight: 700; }
+	.summary-num.bad { color: #ef4444; }
+	.summary-num.warn { color: #f59e0b; }
+	.summary-num.good { color: var(--green); }
+	.summary-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+
+	.mini-chart { display: flex; align-items: flex-end; gap: 4px; height: 36px; margin-top: 10px; }
+	.mini-bar { flex: 1; background: var(--accent); border-radius: 2px; opacity: 0.7; }
+	.mini-bar.now { opacity: 1; background: var(--ink); }
+</style>
+</head>
+<body>
+<div class="shell">
+	<nav class="sidebar">
+		<div class="brand">⬢ WP</div>
+		<div class="section-label">Track</div>
+		<div class="sidebar-item">📊 Dashboard</div>
+		<div class="sidebar-item">📝 Posts</div>
+		<div class="sidebar-item">🖼 Media</div>
+		<div class="sidebar-item">📄 Pages</div>
+		<div class="section-label">Optimize</div>
+		<div class="sidebar-item active">✨ Gleo</div>
+		<div class="sidebar-item">🔍 SEO</div>
+		<div class="section-label">Configure</div>
+		<div class="sidebar-item">⚙️ Settings</div>
+	</nav>
+
+	<div class="layout">
+		<main class="content">
+			<div style="font-size: 28px; font-weight: 700; letter-spacing: -0.02em;">Gleo</div>
+			<div style="color: var(--muted); margin-top: 4px;">Generative Engine Optimization · Last scan 2h ago</div>
+
+			<div class="tabs" style="margin-top: 20px;">
+				<div class="tab">Issues</div>
+				<div class="tab active">Categories</div>
+				<div class="tab">Pages</div>
+			</div>
+
+			<div class="gauge-wrap">
+				<div class="gauge">
+					<svg viewBox="0 0 240 130">
+						<path d="M 20 120 A 100 100 0 0 1 220 120" fill="none" stroke="#eef0f3" stroke-width="14" stroke-linecap="round"/>
+						<path d="M 20 120 A 100 100 0 0 1 220 120" fill="none" stroke="#5b8a4a" stroke-width="14" stroke-linecap="round" stroke-dasharray="232 314" stroke-dashoffset="0"/>
+					</svg>
+					<div class="gauge-pct">74%</div>
+					<div class="gauge-num">74</div>
+				</div>
+				<div style="margin-top: 12px; font-size: 13px; color: var(--muted)">$275 budget · <span style="color: var(--ink); font-weight: 600">100 max</span></div>
+				<div style="display:flex; gap: 28px; margin-top: 24px;">
+					<div class="summary-item"><div class="summary-num">12</div><div class="summary-label">Total issues</div></div>
+					<div class="summary-item"><div class="summary-num bad">3</div><div class="summary-label">High</div></div>
+					<div class="summary-item"><div class="summary-num warn">5</div><div class="summary-label">Medium</div></div>
+					<div class="summary-item"><div class="summary-num good">9</div><div class="summary-label">Auto-fix</div></div>
+				</div>
+			</div>
+
+			<div class="toolbar">
+				<div class="toolbar-left">
+					<span style="font-size: 15px; font-weight: 600;">Category breakdown</span>
+					<span class="label" style="margin-left: 12px;">Sorted by impact</span>
+				</div>
+				<div class="actions">
+					<button class="btn btn-pill">↻ Re-scan</button>
+					<button class="btn btn-pill btn-primary">⚡ Fix all (9)</button>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="bubble" style="background: var(--orange);">📝</div>
+				<div>
+					<div class="cat-name">Content</div>
+					<div class="cat-sub">7 of 10 checks passing</div>
+				</div>
+				<div class="bar-cell">
+					<div class="bar-track"><div class="bar-fill" style="width:72%; background:var(--orange)"></div></div>
+					<div class="bar-pct">72%</div>
+				</div>
+				<div><div class="cell-label">Issues</div><div class="cell-val">2</div></div>
+				<div><div class="cell-label">Weight</div><div class="cell-val">18%</div></div>
+				<div class="chev">›</div>
+			</div>
+
+			<div class="row open">
+				<div class="bubble" style="background: var(--blue);">🧪</div>
+				<div>
+					<div class="cat-name">Substance</div>
+					<div class="cat-sub">3 of 6 checks passing</div>
+				</div>
+				<div class="bar-cell">
+					<div class="bar-track"><div class="bar-fill" style="width:50%; background:var(--blue)"></div></div>
+					<div class="bar-pct">50%</div>
+				</div>
+				<div><div class="cell-label">Issues</div><div class="cell-val" style="color:#f59e0b">3</div></div>
+				<div><div class="cell-label">Weight</div><div class="cell-val">18%</div></div>
+				<div class="chev">⌄</div>
+			</div>
+			<div class="detail">
+				<div class="check pass">
+					<span class="check-dot"></span>
+					<div>
+						<div class="check-name">Conversational tone</div>
+						<div class="check-sub">Reads naturally for chat-style queries — chatbots prefer prose that sounds like an answer, not marketing copy.</div>
+					</div>
+					<span class="pill pill-green">passing</span>
+				</div>
+				<div class="check fail">
+					<span class="check-dot"></span>
+					<div>
+						<div class="check-name">TL;DR summary blocks</div>
+						<div class="check-sub">3 of 4 priority pages missing a 1-paragraph summary at the top. Chatbots quote summaries 3× more often than body paragraphs.</div>
+						<div class="check-fix">⚡ Auto-fix: Gleo will draft a TL;DR using your existing copy</div>
+					</div>
+					<span class="pill pill-amber">auto-fix</span>
+				</div>
+				<div class="check miss">
+					<span class="check-dot"></span>
+					<div>
+						<div class="check-name">Fact density</div>
+						<div class="check-sub">About Us has 0 verifiable facts. Pricing has 1. Models cite pages with concrete numbers, dates, names.</div>
+						<div class="check-fix">⚡ Auto-fix: Gleo will pull facts from Tavily and inject them with source links</div>
+					</div>
+					<span class="pill pill-amber">auto-fix</span>
+				</div>
+				<div class="check pass">
+					<span class="check-dot"></span>
+					<div>
+						<div class="check-name">Direct answers to questions</div>
+						<div class="check-sub">Headlines paired with concise lead sentences — strong signal for retrieval.</div>
+					</div>
+					<span class="pill pill-green">passing</span>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="bubble" style="background: var(--purple);">🏗</div>
+				<div>
+					<div class="cat-name">Structure</div>
+					<div class="cat-sub">9 of 11 checks passing</div>
+				</div>
+				<div class="bar-cell">
+					<div class="bar-track"><div class="bar-fill" style="width:85%; background:var(--purple)"></div></div>
+					<div class="bar-pct">85%</div>
+				</div>
+				<div><div class="cell-label">Issues</div><div class="cell-val">1</div></div>
+				<div><div class="cell-label">Weight</div><div class="cell-val">22%</div></div>
+				<div class="chev">›</div>
+			</div>
+
+			<div class="row">
+				<div class="bubble" style="background: var(--teal);">⚙️</div>
+				<div>
+					<div class="cat-name">Technical</div>
+					<div class="cat-sub">2 of 5 checks passing</div>
+				</div>
+				<div class="bar-cell">
+					<div class="bar-track"><div class="bar-fill" style="width:40%; background:#ef4444"></div></div>
+					<div class="bar-pct">40%</div>
+				</div>
+				<div><div class="cell-label">Issues</div><div class="cell-val" style="color:#ef4444">3</div></div>
+				<div><div class="cell-label">Weight</div><div class="cell-val">28%</div></div>
+				<div class="chev">›</div>
+			</div>
+
+			<div class="row">
+				<div class="bubble" style="background: var(--peach);">🛡</div>
+				<div>
+					<div class="cat-name">Trust</div>
+					<div class="cat-sub">3 of 5 checks passing</div>
+				</div>
+				<div class="bar-cell">
+					<div class="bar-track"><div class="bar-fill" style="width:60%; background:#f59e0b"></div></div>
+					<div class="bar-pct">60%</div>
+				</div>
+				<div><div class="cell-label">Issues</div><div class="cell-val">2</div></div>
+				<div><div class="cell-label">Weight</div><div class="cell-val">14%</div></div>
+				<div class="chev">›</div>
+			</div>
+
+			<div class="row">
+				<div class="bubble" style="background: var(--green);">🤖</div>
+				<div>
+					<div class="cat-name">AI accessibility</div>
+					<div class="cat-sub">4 of 4 checks passing</div>
+				</div>
+				<div class="bar-cell">
+					<div class="bar-track"><div class="bar-fill" style="width:90%; background:var(--green)"></div></div>
+					<div class="bar-pct">90%</div>
+				</div>
+				<div><div class="cell-label">Issues</div><div class="cell-val">0</div></div>
+				<div><div class="cell-label">Weight</div><div class="cell-val">—</div></div>
+				<div class="chev">›</div>
+			</div>
+		</main>
+
+		<aside class="rail">
+			<div class="rail-card">
+				<div class="rail-title">Score history</div>
+				<div style="display: flex; align-items: baseline; gap: 8px;">
+					<div style="font-size: 28px; font-weight: 700;">74</div>
+					<div style="font-size: 13px; color: var(--green); font-weight: 600;">+6</div>
+					<div style="font-size: 12px; color: var(--muted);">vs last week</div>
+				</div>
+				<div class="mini-chart">
+					<div class="mini-bar" style="height: 38%"></div>
+					<div class="mini-bar" style="height: 42%"></div>
+					<div class="mini-bar" style="height: 50%"></div>
+					<div class="mini-bar" style="height: 48%"></div>
+					<div class="mini-bar" style="height: 55%"></div>
+					<div class="mini-bar" style="height: 60%"></div>
+					<div class="mini-bar" style="height: 62%"></div>
+					<div class="mini-bar" style="height: 58%"></div>
+					<div class="mini-bar" style="height: 65%"></div>
+					<div class="mini-bar" style="height: 68%"></div>
+					<div class="mini-bar" style="height: 70%"></div>
+					<div class="mini-bar now" style="height: 90%"></div>
+				</div>
+			</div>
+
+			<div class="rail-card">
+				<div class="rail-title">Top issue</div>
+				<div style="font-weight: 600; font-size: 13px;">Missing FAQ schema on 4 pages</div>
+				<div style="color: var(--muted); font-size: 12px; margin-top: 4px;">Highest-impact fix · estimated +8 points</div>
+				<button class="btn btn-pill" style="margin-top: 12px; width: 100%; justify-content: center;">⚡ Fix now</button>
+			</div>
+
+			<div class="rail-card">
+				<div class="rail-title">Recent fixes</div>
+				<div class="rail-row"><span>Added llms.txt</span><span style="color: var(--muted); font-size: 12px;">2h ago</span></div>
+				<div class="rail-row"><span>Organization schema</span><span style="color: var(--muted); font-size: 12px;">2h ago</span></div>
+				<div class="rail-row"><span>Heading hierarchy · Home</span><span style="color: var(--muted); font-size: 12px;">2h ago</span></div>
+				<div style="margin-top: 12px;"><a href="#" style="color: var(--ink); font-size: 12px; font-weight: 500;">View changelog →</a></div>
+			</div>
+
+			<div class="rail-card">
+				<div class="rail-title">AI crawlers (30d)</div>
+				<div class="rail-row"><span>GPTBot</span><span style="font-weight: 600;">142</span></div>
+				<div class="rail-row"><span>ClaudeBot</span><span style="font-weight: 600;">87</span></div>
+				<div class="rail-row"><span>PerplexityBot</span><span style="font-weight: 600;">34</span></div>
+			</div>
+		</aside>
+	</div>
+</div>
+</body>
+</html>

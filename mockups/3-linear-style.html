@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gleo — Mockup 3: Linear-style</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+	:root {
+		--bg: #fafafa;
+		--surface: #ffffff;
+		--ink: #0a0a0a;
+		--muted: #6b7280;
+		--line: #ececec;
+		--accent: #5b5bd6;
+		--accent-soft: #eeeefb;
+		--green: #10b981;
+		--amber: #f59e0b;
+		--red: #ef4444;
+	}
+	* { box-sizing: border-box; }
+	body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 13px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+	.shell { display: flex; min-height: 100vh; }
+	.sidebar { width: 200px; background: var(--bg); border-right: 1px solid var(--line); padding: 20px 12px; }
+	.brand { font-size: 15px; font-weight: 700; padding: 4px 10px 16px; }
+	.sidebar-item { padding: 7px 10px; border-radius: 6px; color: var(--muted); cursor: pointer; font-size: 13px; font-weight: 500; }
+	.sidebar-item:hover { background: #f1f1f1; color: var(--ink); }
+	.sidebar-item.active { background: #fff; color: var(--ink); box-shadow: 0 0 0 1px var(--line); }
+	.content { flex: 1; padding: 28px 40px 100px; max-width: 1100px; }
+	.head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+	h1 { font-size: 22px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+	.sub { color: var(--muted); margin-top: 4px; font-size: 13px; }
+	.tabs { display: flex; gap: 4px; background: #f1f1f1; padding: 3px; border-radius: 8px; width: fit-content; margin-bottom: 24px; }
+	.tab { padding: 6px 12px; border-radius: 6px; cursor: pointer; color: var(--muted); font-size: 13px; font-weight: 500; }
+	.tab.active { background: #fff; color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+	.row { display: grid; grid-template-columns: 1fr 1fr 1.3fr; gap: 14px; margin-bottom: 14px; }
+	.card { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 18px; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+	.card-title { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; }
+	.score-num { font-size: 56px; font-weight: 600; line-height: 1; letter-spacing: -0.02em; }
+	.score-row { display: flex; align-items: baseline; gap: 14px; }
+	.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+	.dot.green { background: var(--green); }
+	.dot.amber { background: var(--amber); }
+	.dot.red { background: var(--red); }
+	.score-band { font-size: 13px; font-weight: 500; }
+	.score-note { color: var(--muted); margin-top: 6px; font-size: 13px; }
+	.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+	.stat-num { font-size: 26px; font-weight: 600; line-height: 1; }
+	.stat-label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+	.bar { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px; color: var(--muted); }
+	.bar span:first-child { color: var(--ink); font-weight: 500; }
+	.bar-track { height: 6px; background: #f1f1f1; border-radius: 999px; margin-bottom: 12px; overflow: hidden; }
+	.bar-fill { height: 100%; background: var(--green); border-radius: 999px; }
+	.bar-fill.warn { background: var(--amber); }
+	.bar-fill.bad { background: var(--red); }
+	table { width: 100%; border-collapse: collapse; }
+	th, td { padding: 12px 16px; border-bottom: 1px solid var(--line); text-align: left; font-size: 13px; }
+	th { font-weight: 500; color: var(--muted); font-size: 12px; }
+	tr:last-child td { border-bottom: 0; }
+	tr:hover td { background: #fafafa; }
+	.pill { display: inline-flex; align-items: center; padding: 3px 9px; font-size: 11px; border-radius: 999px; font-weight: 500; background: #f3f4f7; color: var(--muted); }
+	.pill-amber { background: #fef3c7; color: #92400e; }
+	.pill-green { background: #d1fae5; color: #065f46; }
+	.pill-accent { background: var(--accent-soft); color: var(--accent); }
+	.pill-red { background: #fee2e2; color: #991b1b; }
+	.cat { border-bottom: 1px solid var(--line); }
+	.cat-row { display: grid; grid-template-columns: 28px 1fr 110px 20px; gap: 16px; align-items: center; padding: 14px 20px; cursor: pointer; }
+	.cat-row:hover { background: #fafafa; }
+	.cat.open .cat-row { background: #fafafa; }
+	.cat-icon { font-size: 16px; line-height: 1; }
+	.cat-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+	.cat-name { font-weight: 600; font-size: 13px; }
+	.cat-pct { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+	.cat-meta { font-size: 11px; color: var(--muted); margin-top: 6px; }
+	.cat-status { text-align: right; }
+	.chev { color: var(--muted); font-size: 16px; transition: transform 0.15s; }
+	.cat.open .chev { color: var(--ink); }
+	.cat-detail { padding: 4px 20px 16px 64px; background: #fafafa; }
+	.check { display: grid; grid-template-columns: 14px 1fr 80px; gap: 12px; align-items: start; padding: 10px 0; border-top: 1px solid var(--line); }
+	.check:first-child { border-top: 0; }
+	.check-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; }
+	.check.pass .check-dot { background: var(--green); }
+	.check.fail .check-dot { background: var(--amber); }
+	.check-name { font-weight: 500; font-size: 13px; }
+	.check-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+	a { color: var(--ink); text-decoration: none; font-weight: 500; }
+	a:hover { text-decoration: underline; }
+	input[type=checkbox] { accent-color: var(--accent); width: 14px; height: 14px; }
+	.btn { background: var(--surface); border: 1px solid var(--line); color: var(--ink); padding: 7px 12px; border-radius: 7px; cursor: pointer; font: 500 13px 'Inter', sans-serif; box-shadow: 0 1px 2px rgba(0,0,0,0.04); }
+	.btn:hover { background: #f9f9f9; }
+	.btn-primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+	.btn-primary:hover { background: #1f1f1f; }
+	.btn-ghost { background: transparent; border-color: transparent; color: var(--muted); box-shadow: none; }
+	.actionbar { position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.08); align-items: center; }
+	.actionbar .meta { padding: 0 10px; color: var(--muted); font-size: 12px; }
+	.kbd { display: inline-block; padding: 1px 5px; font-size: 11px; border-radius: 4px; background: #f1f1f1; border: 1px solid var(--line); color: var(--muted); margin-left: 4px; font-family: ui-monospace, monospace; }
+</style>
+</head>
+<body>
+	<div class="shell">
+		<nav class="sidebar">
+			<div class="brand">WP Admin</div>
+			<div class="sidebar-item">Dashboard</div>
+			<div class="sidebar-item">Posts</div>
+			<div class="sidebar-item">Media</div>
+			<div class="sidebar-item">Pages</div>
+			<div class="sidebar-item active">Gleo</div>
+			<div class="sidebar-item">Settings</div>
+		</nav>
+		<main class="content">
+			<div class="head">
+				<div>
+					<h1>Gleo</h1>
+					<div class="sub">Generative Engine Optimization · Last scan 2 hours ago</div>
+				</div>
+				<div style="display:flex; gap:8px">
+					<button class="btn btn-ghost">View changelog</button>
+					<button class="btn">Re-scan</button>
+					<button class="btn btn-primary">One-click fix</button>
+				</div>
+			</div>
+
+			<div class="tabs">
+				<div class="tab active">Overview</div>
+				<div class="tab">Issues</div>
+				<div class="tab">AI Crawlers</div>
+				<div class="tab">Mention Probe</div>
+				<div class="tab">Changelog</div>
+				<div class="tab">Settings</div>
+			</div>
+
+			<div class="row" style="grid-template-columns: 1.1fr 1fr;">
+				<div class="card">
+					<div class="card-title">GEO Score</div>
+					<div class="score-row">
+						<div class="score-num">74</div>
+						<div>
+							<div class="score-band"><span class="dot green"></span>Good · +6 since last week</div>
+							<div class="score-note">Solid foundation. 9 of 12 issues are auto-fixable.</div>
+						</div>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-title">Issues</div>
+					<div class="stat-grid" style="grid-template-columns: 1fr 1fr 1fr 1fr;">
+						<div><div class="stat-num">12</div><div class="stat-label">Total</div></div>
+						<div><div class="stat-num" style="color:var(--red)">3</div><div class="stat-label">High</div></div>
+						<div><div class="stat-num" style="color:var(--amber)">5</div><div class="stat-label">Medium</div></div>
+						<div><div class="stat-num" style="color:var(--green)">9</div><div class="stat-label">Auto-fix</div></div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card cat-card" style="padding: 0; margin-bottom: 14px;">
+				<div style="padding: 16px 20px; display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid var(--line);">
+					<div>
+						<div style="font-size: 14px; font-weight: 600;">Category breakdown</div>
+						<div style="color:var(--muted); font-size:12px; margin-top: 2px">Six pillars of Generative Engine Optimization · click to expand</div>
+					</div>
+					<div style="display:flex; gap:6px">
+						<button class="btn btn-ghost" style="font-size:12px">Collapse all</button>
+					</div>
+				</div>
+
+				<div class="cat">
+					<div class="cat-row">
+						<div class="cat-icon">📝</div>
+						<div class="cat-main">
+							<div class="cat-head"><span class="cat-name">Content</span><span class="cat-pct">72%</span></div>
+							<div class="bar-track"><div class="bar-fill" style="width:72%"></div></div>
+							<div class="cat-meta">7 of 10 checks passing · 2 issues · weight 18%</div>
+						</div>
+						<div class="cat-status"><span class="pill pill-green">good</span></div>
+						<div class="chev">›</div>
+					</div>
+				</div>
+
+				<div class="cat open">
+					<div class="cat-row">
+						<div class="cat-icon">🧪</div>
+						<div class="cat-main">
+							<div class="cat-head"><span class="cat-name">Substance</span><span class="cat-pct">50%</span></div>
+							<div class="bar-track"><div class="bar-fill warn" style="width:50%"></div></div>
+							<div class="cat-meta">3 of 6 checks passing · 3 issues · weight 18%</div>
+						</div>
+						<div class="cat-status"><span class="pill pill-amber">needs work</span></div>
+						<div class="chev">⌄</div>
+					</div>
+					<div class="cat-detail">
+						<div class="check pass"><span class="check-dot"></span><div class="check-text"><div class="check-name">Conversational tone</div><div class="check-sub">Reads naturally for chat-style queries</div></div><span class="pill pill-green">passing</span></div>
+						<div class="check fail"><span class="check-dot"></span><div class="check-text"><div class="check-name">TL;DR summary blocks</div><div class="check-sub">3 of 4 priority pages missing a 1-paragraph summary</div></div><span class="pill pill-amber">auto-fix</span></div>
+						<div class="check fail"><span class="check-dot"></span><div class="check-text"><div class="check-name">Fact density</div><div class="check-sub">About Us has 0 verifiable facts. Pricing has 1.</div></div><span class="pill pill-amber">auto-fix</span></div>
+						<div class="check pass"><span class="check-dot"></span><div class="check-text"><div class="check-name">Direct answers to questions</div><div class="check-sub">Headlines paired with concise lead sentences</div></div><span class="pill pill-green">passing</span></div>
+					</div>
+				</div>
+
+				<div class="cat">
+					<div class="cat-row">
+						<div class="cat-icon">🏗</div>
+						<div class="cat-main">
+							<div class="cat-head"><span class="cat-name">Structure</span><span class="cat-pct">85%</span></div>
+							<div class="bar-track"><div class="bar-fill" style="width:85%"></div></div>
+							<div class="cat-meta">9 of 11 checks passing · 1 issue · weight 22%</div>
+						</div>
+						<div class="cat-status"><span class="pill pill-green">good</span></div>
+						<div class="chev">›</div>
+					</div>
+				</div>
+
+				<div class="cat">
+					<div class="cat-row">
+						<div class="cat-icon">⚙️</div>
+						<div class="cat-main">
+							<div class="cat-head"><span class="cat-name">Technical</span><span class="cat-pct">40%</span></div>
+							<div class="bar-track"><div class="bar-fill bad" style="width:40%"></div></div>
+							<div class="cat-meta">2 of 5 checks passing · 3 issues · weight 28%</div>
+						</div>
+						<div class="cat-status"><span class="pill pill-red">action needed</span></div>
+						<div class="chev">›</div>
+					</div>
+				</div>
+
+				<div class="cat">
+					<div class="cat-row">
+						<div class="cat-icon">🛡</div>
+						<div class="cat-main">
+							<div class="cat-head"><span class="cat-name">Trust</span><span class="cat-pct">60%</span></div>
+							<div class="bar-track"><div class="bar-fill warn" style="width:60%"></div></div>
+							<div class="cat-meta">3 of 5 checks passing · 2 issues · weight 14%</div>
+						</div>
+						<div class="cat-status"><span class="pill pill-amber">needs work</span></div>
+						<div class="chev">›</div>
+					</div>
+				</div>
+
+				<div class="cat" style="border-bottom: 0;">
+					<div class="cat-row">
+						<div class="cat-icon">🤖</div>
+						<div class="cat-main">
+							<div class="cat-head"><span class="cat-name">AI accessibility</span><span class="cat-pct">90%</span></div>
+							<div class="bar-track"><div class="bar-fill" style="width:90%"></div></div>
+							<div class="cat-meta">4 of 4 checks passing · 0 issues · llms.txt published</div>
+						</div>
+						<div class="cat-status"><span class="pill pill-green">good</span></div>
+						<div class="chev">›</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="card" style="padding: 0;">
+				<div style="padding: 18px 20px 8px; display:flex; justify-content:space-between; align-items:center;">
+					<div>
+						<div style="font-size: 14px; font-weight: 600;">Pick pages to analyze</div>
+						<div style="color:var(--muted); font-size:12px; margin-top: 2px">4 of 6 selected · 2 page-builder pages will be scanned but not edited</div>
+					</div>
+					<div style="display:flex; gap:6px">
+						<button class="btn btn-ghost" style="font-size:12px">Select all</button>
+						<button class="btn btn-ghost" style="font-size:12px">Clear</button>
+					</div>
+				</div>
+				<table>
+					<thead><tr><th style="width:40px"></th><th>Title</th><th>Type</th><th>Words</th><th>Status</th></tr></thead>
+					<tbody>
+						<tr><td><input type="checkbox" checked></td><td><a href="#">Home</a> <span class="pill pill-accent">homepage</span></td><td>page</td><td>842</td><td><span class="pill pill-green"><span class="dot green" style="width:6px;height:6px"></span>editable</span></td></tr>
+						<tr><td><input type="checkbox" checked></td><td><a href="#">About Us</a></td><td>page</td><td>1,210</td><td><span class="pill pill-green"><span class="dot green" style="width:6px;height:6px"></span>editable</span></td></tr>
+						<tr><td><input type="checkbox"></td><td><a href="#">Services</a></td><td>page</td><td>1,560</td><td><span class="pill pill-amber"><span class="dot amber" style="width:6px;height:6px"></span>page builder</span></td></tr>
+						<tr><td><input type="checkbox" checked></td><td><a href="#">Pricing</a></td><td>page</td><td>620</td><td><span class="pill pill-green"><span class="dot green" style="width:6px;height:6px"></span>editable</span></td></tr>
+						<tr><td><input type="checkbox"></td><td><a href="#">Contact</a></td><td>page</td><td>180</td><td><span class="pill pill-amber"><span class="dot amber" style="width:6px;height:6px"></span>page builder</span></td></tr>
+						<tr><td><input type="checkbox" checked></td><td><a href="#">5 SEO myths to ignore</a></td><td>post</td><td>1,820</td><td><span class="pill pill-green"><span class="dot green" style="width:6px;height:6px"></span>editable</span></td></tr>
+					</tbody>
+				</table>
+			</div>
+		</main>
+	</div>
+
+	<div class="actionbar">
+		<span class="meta">4 pages selected</span>
+		<button class="btn">Re-scan <span class="kbd">R</span></button>
+		<button class="btn btn-primary">Fix all <span class="kbd" style="background:#333; color:#aaa; border-color:#333">F</span></button>
+	</div>
+</body>
+</html>
