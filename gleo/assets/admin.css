@@ -609,6 +609,58 @@
 
 /* ===== Fusion 7: gauge hero, category cards, right rail, tour ===== */
 
+/* Split layout: live iframe left, GEO panel right */
+#gleo-root .gleo-split {
+	display: flex;
+	gap: 0;
+	/* break out of .gleo-body padding */
+	margin: -24px -28px;
+	height: calc(100vh - 116px); /* viewport minus header (~60px) + tabs (~56px) */
+	min-height: 600px;
+	overflow: hidden;
+}
+#gleo-root .gleo-split__frame {
+	flex: 3;
+	position: relative;
+	background: #f3f4f6;
+	border-right: 1px solid var(--line);
+	min-width: 0;
+}
+#gleo-root .gleo-split__iframe {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	border: none;
+	border-radius: 0;
+	transition: opacity 0.3s ease;
+}
+#gleo-root .gleo-split__loading {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	background: #f9fafb;
+	z-index: 2;
+}
+#gleo-root .gleo-split__panel {
+	flex: 2;
+	max-width: 480px;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 24px 20px;
+	background: #fff;
+}
+@media ( max-width: 1100px ) {
+	#gleo-root .gleo-split { flex-direction: column; height: auto; margin: -24px -16px; }
+	#gleo-root .gleo-split__frame { height: 320px; flex: none; border-right: none; border-bottom: 1px solid var(--line); }
+	#gleo-root .gleo-split__panel { max-width: none; }
+}
+
 #gleo-root .gleo-overview { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
 @media ( max-width: 1100px ) { #gleo-root .gleo-overview { grid-template-columns: 1fr; } }
 #gleo-root .gleo-overview__main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
@@ -858,9 +910,12 @@
 	display: flex; justify-content: space-between; align-items: center; gap: 12px;
 	padding: 13px 16px; border-bottom: 1px solid var(--line);
 	transition: background 120ms ease;
+	cursor: pointer;
 }
 #gleo-root .gleo-pagelist__row:last-child { border-bottom: none; }
 #gleo-root .gleo-pagelist__row:hover { background: rgba(0,0,0,0.02); }
+#gleo-root .gleo-pagelist__row--active { background: rgba(91,91,214,0.06); }
+#gleo-root .gleo-pagelist__row--active:hover { background: rgba(91,91,214,0.09); }
 #gleo-root .gleo-pagelist__info { min-width: 0; }
 #gleo-root .gleo-pagelist__title {
 	font-size: 14px; font-weight: 500; color: var(--ink);

@@ -877,6 +877,17 @@
 	function OverviewTab( { report, status, runScan, scanning, selectedIds, setSelectedIds, setReport, showToast, onOpenTour } ) {
 		const [ fixingId, setFixingId ] = useState( null );
 		const [ openKey, setOpenKey ] = useState( null );
+		const [ previewPage, setPreviewPage ] = useState( null );
+		const [ iframeReady, setIframeReady ] = useState( false );
+
+		const pages = report ? ( report.pages || [] ) : [];
+
+		// Set first page as preview when report first arrives
+		useEffect( () => {
+			if ( pages.length > 0 && ! previewPage ) {
+				setPreviewPage( pages[0] );
+			}
+		}, [ report ] );
 
 		if ( ! report ) {
 			return h( Fragment, null,
@@ -906,30 +917,57 @@
 			}
 		};
 
+		const selectPage = ( p ) => {
+			setIframeReady( false );
+			setPreviewPage( p );
+		};
+
+		const iframeSrc = previewPage ? previewPage.permalink + '?nocache=' + previewPage.post_id : null;
+
 		return h( Fragment, null,
-			h( 'div', { className: 'gleo-card gleo-hero' },
-				h( HalfGauge, { score: score.score, band: score.band } ),
-				h( 'div', null,
-					h( 'div', { className: 'gleo-card__label' }, 'GEO Score' ),
-					h( 'div', { className: 'gleo-hero__copy' }, scoreCopy( score.band ) ),
-					h( 'div', { className: 'gleo-kpi-grid' },
-						h( 'div', { className: 'gleo-kpi' },
-							h( 'div', { className: 'gleo-kpi__num' }, counts.total || 0 ),
-							h( 'div', { className: 'gleo-kpi__lbl' }, 'Open issues' ),
+			h( 'div', { className: 'gleo-split' },
+				// Left: live site iframe
+				h( 'div', { className: 'gleo-split__frame' },
+					iframeSrc && h( Fragment, null,
+						! iframeReady && h( 'div', { className: 'gleo-split__loading' },
+							h( 'div', { className: 'gleo-fix-overlay__spinner' } ),
+							h( 'div', { style: { marginTop: 12, fontSize: 13, color: '#6b7280' } }, 'Loading preview…' ),
 						),
-						h( 'div', { className: 'gleo-kpi' },
-							h( 'div', { className: 'gleo-kpi__num gleo-kpi__num--bad' }, counts.high || 0 ),
-							h( 'div', { className: 'gleo-kpi__lbl' }, 'High severity' ),
-						),
-						h( 'div', { className: 'gleo-kpi' },
-							h( 'div', { className: 'gleo-kpi__num gleo-kpi__num--good' }, counts.auto_fixable || 0 ),
-							h( 'div', { className: 'gleo-kpi__lbl' }, 'Auto-fixable' ),
-						),
+						h( 'iframe', {
+							key: iframeSrc,
+							src: iframeSrc,
+							className: 'gleo-split__iframe',
+							style: { opacity: iframeReady ? 1 : 0 },
+							onLoad: () => setIframeReady( true ),
+						} ),
+					),
+					! iframeSrc && h( 'div', { className: 'gleo-split__loading' },
+						h( 'div', { style: { fontSize: 13, color: '#9ca3af' } }, 'No page selected' ),
 					),
 				),
-			),
-			h( 'div', { className: 'gleo-overview' },
-				h( 'div', { className: 'gleo-overview__main' },
+				// Right: GEO panel
+				h( 'div', { className: 'gleo-split__panel' },
+					h( 'div', { className: 'gleo-card gleo-hero' },
+						h( HalfGauge, { score: score.score, band: score.band } ),
+						h( 'div', null,
+							h( 'div', { className: 'gleo-card__label' }, 'GEO Score' ),
+							h( 'div', { className: 'gleo-hero__copy' }, scoreCopy( score.band ) ),
+							h( 'div', { className: 'gleo-kpi-grid' },
+								h( 'div', { className: 'gleo-kpi' },
+									h( 'div', { className: 'gleo-kpi__num' }, counts.total || 0 ),
+									h( 'div', { className: 'gleo-kpi__lbl' }, 'Open issues' ),
+								),
+								h( 'div', { className: 'gleo-kpi' },
+									h( 'div', { className: 'gleo-kpi__num gleo-kpi__num--bad' }, counts.high || 0 ),
+									h( 'div', { className: 'gleo-kpi__lbl' }, 'High severity' ),
+								),
+								h( 'div', { className: 'gleo-kpi' },
+									h( 'div', { className: 'gleo-kpi__num gleo-kpi__num--good' }, counts.auto_fixable || 0 ),
+									h( 'div', { className: 'gleo-kpi__lbl' }, 'Auto-fixable' ),
+								),
+							),
+						),
+					),
 					h( 'div', { className: 'gleo-section-head' },
 						h( 'div', { className: 'gleo-section-title' }, 'Categories' ),
 						h( 'div', { className: 'gleo-muted', style: { fontSize: 12 } }, 'Sorted worst first' ),
@@ -948,18 +986,28 @@
 						onFix: fixOne,
 						fixingId,
 					} ),
-					h( PreviewPanel, { selectedIds, setSelectedIds } ),
-					( report.pages || [] ).length > 0 && h( 'div', { className: 'gleo-pages-preview' },
+					h( OverviewRail, {
+						issues: report.issues || [],
+						onFixOne: fixOne,
+						fixingId,
+						onOpenTour,
+					} ),
+					pages.length > 0 && h( 'div', { className: 'gleo-pages-preview' },
 						h( 'div', { className: 'gleo-section-head' },
 							h( 'div', { className: 'gleo-section-title' }, 'Your pages' ),
 						),
 						h( 'div', { className: 'gleo-pagelist' },
-							( report.pages || [] ).slice( 0, 10 ).map( p => {
+							pages.slice( 0, 10 ).map( p => {
 								const issueCount = ( p.issues && p.issues.length ) || 0;
 								const tone = issueCount === 0 ? 'good' : issueCount <= 2 ? 'warn' : 'bad';
-								return h( 'div', { key: p.post_id, className: 'gleo-pagelist__row' },
+								const isActive = previewPage && previewPage.post_id === p.post_id;
+								return h( 'div', {
+									key: p.post_id,
+									className: 'gleo-pagelist__row' + ( isActive ? ' gleo-pagelist__row--active' : '' ),
+									onClick: () => selectPage( p ),
+								},
 									h( 'div', { className: 'gleo-pagelist__info' },
-										h( 'a', { href: p.permalink, target: '_blank', rel: 'noopener', className: 'gleo-pagelist__title' },
+										h( 'div', { className: 'gleo-pagelist__title' },
 											p.title || '(untitled)',
 										),
 										h( 'div', { className: 'gleo-pagelist__meta' },
@@ -972,20 +1020,12 @@
 										h( 'span', { className: 'gleo-pill gleo-pill--' + tone },
 											issueCount === 0 ? '✓ clean' : issueCount + ' issue' + ( issueCount === 1 ? '' : 's' ),
 										),
-										h( 'a', { href: p.permalink, target: '_blank', rel: 'noopener', className: 'gleo-pagelist__preview' }, 'Preview site →' ),
 									),
 								);
 							} ),
 						),
 					),
-				),
-				h( 'div', { className: 'gleo-overview__rail' },
-					h( OverviewRail, {
-						issues: report.issues || [],
-						onFixOne: fixOne,
-						fixingId,
-						onOpenTour,
-					} ),
+					h( PreviewPanel, { selectedIds, setSelectedIds } ),
 				),
 			),
 		);
